@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   ADVANCED_BOXES_PER_TIER,
   BP_MAX_LEVELS,
@@ -45,37 +45,6 @@ export function KafraCalculator() {
   const [collectionBoxesPer100Xp, setCollectionBoxesPer100Xp] = useState(
     COLLECTION_BOXES_PER_TIER,
   )
-  const [advancedBoxes, setAdvancedBoxes] = useState(0)
-  const [collectionBoxes, setCollectionBoxes] = useState(0)
-
-  const autoResult = useMemo(
-    () =>
-      calculateMonthlyRewards(
-        year,
-        month,
-        advancedRewards,
-        collectionRewards,
-        purchasedLevels,
-        bpZenyReward,
-        advancedBoxesPer100Xp,
-        collectionBoxesPer100Xp,
-      ),
-    [
-      year,
-      month,
-      advancedRewards,
-      collectionRewards,
-      purchasedLevels,
-      bpZenyReward,
-      advancedBoxesPer100Xp,
-      collectionBoxesPer100Xp,
-    ],
-  )
-
-  useEffect(() => {
-    setAdvancedBoxes(autoResult.calculatedAdvancedBoxes)
-    setCollectionBoxes(autoResult.calculatedCollectionBoxes)
-  }, [autoResult.calculatedAdvancedBoxes, autoResult.calculatedCollectionBoxes])
 
   const result = useMemo(
     () =>
@@ -88,8 +57,6 @@ export function KafraCalculator() {
         bpZenyReward,
         advancedBoxesPer100Xp,
         collectionBoxesPer100Xp,
-        advancedBoxes,
-        collectionBoxes,
       ),
     [
       year,
@@ -100,8 +67,6 @@ export function KafraCalculator() {
       bpZenyReward,
       advancedBoxesPer100Xp,
       collectionBoxesPer100Xp,
-      advancedBoxes,
-      collectionBoxes,
     ],
   )
 
@@ -255,38 +220,14 @@ export function KafraCalculator() {
               value={`${result.surplusXp.toLocaleString('en-US')} XP`}
             />
             <StatRow label="Tiers (×100 XP)" value={result.tiers.toLocaleString('en-US')} />
-            <div className="flex items-center justify-between gap-4 border-b border-slate-800 py-2">
-              <label htmlFor="advanced-boxes" className="text-sm text-slate-400">
-                Advanced boxes
-              </label>
-              <input
-                id="advanced-boxes"
-                type="number"
-                min={0}
-                step={1}
-                value={advancedBoxes}
-                onChange={(event) =>
-                  setAdvancedBoxes(Math.max(0, Math.floor(Number(event.target.value) || 0)))
-                }
-                className="w-24 rounded-lg border border-slate-700 bg-slate-950 px-2 py-1 text-right text-sm text-white outline-none focus:border-violet-500"
-              />
-            </div>
-            <div className="flex items-center justify-between gap-4 border-b border-slate-800 py-2">
-              <label htmlFor="collection-boxes" className="text-sm text-slate-400">
-                Collection boxes
-              </label>
-              <input
-                id="collection-boxes"
-                type="number"
-                min={0}
-                step={1}
-                value={collectionBoxes}
-                onChange={(event) =>
-                  setCollectionBoxes(Math.max(0, Math.floor(Number(event.target.value) || 0)))
-                }
-                className="w-24 rounded-lg border border-slate-700 bg-slate-950 px-2 py-1 text-right text-sm text-white outline-none focus:border-violet-500"
-              />
-            </div>
+            <StatRow
+              label="Advanced boxes"
+              value={result.advancedBoxes.toLocaleString('en-US')}
+            />
+            <StatRow
+              label="Collection boxes"
+              value={result.collectionBoxes.toLocaleString('en-US')}
+            />
             <StatRow
               label="Advanced zeny"
               value={formatZeny(result.advancedExpectedZeny)}
