@@ -32,6 +32,7 @@ export function KafraCalculator() {
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth())
   const [purchasedLevels, setPurchasedLevels] = useState(0)
+  const [bpZenyReward, setBpZenyReward] = useState(0)
   const [advancedRewards, setAdvancedRewards] = useState<BoxReward[]>(() =>
     cloneDefaultRewards(),
   )
@@ -47,8 +48,9 @@ export function KafraCalculator() {
         advancedRewards,
         collectionRewards,
         purchasedLevels,
+        bpZenyReward,
       ),
-    [year, month, advancedRewards, collectionRewards, purchasedLevels],
+    [year, month, advancedRewards, collectionRewards, purchasedLevels, bpZenyReward],
   )
 
   return (
@@ -76,6 +78,20 @@ export function KafraCalculator() {
                 )
               }
               className="w-32 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white outline-none focus:border-violet-500"
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-slate-400">
+            BP zeny rewards
+            <input
+              type="number"
+              min={0}
+              step={1000}
+              value={bpZenyReward}
+              onChange={(event) =>
+                setBpZenyReward(Math.max(0, Number(event.target.value) || 0))
+              }
+              className="w-40 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white outline-none focus:border-violet-500"
             />
           </label>
 
@@ -207,7 +223,7 @@ export function KafraCalculator() {
               Final result
             </p>
             <p className="mt-1 text-sm text-emerald-200/80">
-              Box zeny minus BP level purchase cost
+              Box zeny plus BP rewards minus level purchase cost
             </p>
           </div>
           <p

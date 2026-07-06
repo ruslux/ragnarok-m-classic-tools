@@ -26,6 +26,7 @@ export type MonthlyCalculation = {
   month: number
   purchasedLevels: number
   purchaseCost: number
+  bpZenyReward: number
   totalXp: number
   xpForBp: number
   surplusXp: number
@@ -97,6 +98,10 @@ export function calculatePurchaseCost(purchasedLevels: number): number {
   return purchasedLevels * ZENY_PER_BP_LEVEL
 }
 
+export function clampNonNegative(value: number): number {
+  return Number.isFinite(value) && value > 0 ? value : 0
+}
+
 export function splitXpForBpAndBoxes(
   totalXp: number,
   purchasedLevels: number,
@@ -115,9 +120,11 @@ export function calculateMonthlyRewards(
   advancedRewards: BoxReward[],
   collectionRewards: BoxReward[],
   purchasedLevels = 0,
+  bpZenyReward = 0,
 ): MonthlyCalculation {
   const totalXp = calculateMonthlyXp(year, month)
   const clampedPurchasedLevels = Math.min(Math.max(0, purchasedLevels), BP_MAX_LEVELS)
+  const clampedBpZenyReward = clampNonNegative(bpZenyReward)
   const purchaseCost = calculatePurchaseCost(clampedPurchasedLevels)
   const { xpForBp, surplusXp } = splitXpForBpAndBoxes(totalXp, clampedPurchasedLevels)
   const tiers = Math.floor(surplusXp / XP_PER_TIER)
@@ -134,6 +141,7 @@ export function calculateMonthlyRewards(
     month,
     purchasedLevels: clampedPurchasedLevels,
     purchaseCost,
+    bpZenyReward: clampedBpZenyReward,
     totalXp,
     xpForBp,
     surplusXp,
@@ -145,7 +153,7 @@ export function calculateMonthlyRewards(
     advancedExpectedZeny,
     collectionExpectedZeny,
     totalExpectedZeny,
-    netZeny: totalExpectedZeny - purchaseCost,
+    netZeny: totalExpectedZeny + clampedBpZenyReward - purchaseCost,
   }
 }
 
