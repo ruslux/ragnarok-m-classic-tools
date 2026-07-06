@@ -128,17 +128,21 @@ export function calculateMonthlyRewards(
   collectionRewards: BoxReward[],
   purchasedLevels = 0,
   bpZenyReward = 0,
+  advancedBoxesPerTier = ADVANCED_BOXES_PER_TIER,
+  collectionBoxesPerTier = COLLECTION_BOXES_PER_TIER,
   advancedBoxesOverride?: number,
   collectionBoxesOverride?: number,
 ): MonthlyCalculation {
   const totalXp = calculateMonthlyXp(year, month)
   const clampedPurchasedLevels = Math.min(Math.max(0, purchasedLevels), BP_MAX_LEVELS)
   const clampedBpZenyReward = clampNonNegative(bpZenyReward)
+  const clampedAdvancedBoxesPerTier = clampNonNegativeInt(advancedBoxesPerTier)
+  const clampedCollectionBoxesPerTier = clampNonNegativeInt(collectionBoxesPerTier)
   const purchaseCost = calculatePurchaseCost(clampedPurchasedLevels)
   const { xpForBp, surplusXp } = splitXpForBpAndBoxes(totalXp, clampedPurchasedLevels)
   const tiers = Math.floor(surplusXp / XP_PER_TIER)
-  const calculatedAdvancedBoxes = tiers * ADVANCED_BOXES_PER_TIER
-  const calculatedCollectionBoxes = tiers * COLLECTION_BOXES_PER_TIER
+  const calculatedAdvancedBoxes = tiers * clampedAdvancedBoxesPerTier
+  const calculatedCollectionBoxes = tiers * clampedCollectionBoxesPerTier
   const advancedBoxes =
     advancedBoxesOverride !== undefined
       ? clampNonNegativeInt(advancedBoxesOverride)

@@ -39,6 +39,12 @@ export function KafraCalculator() {
   const [collectionRewards, setCollectionRewards] = useState<BoxReward[]>(() =>
     cloneDefaultRewards(),
   )
+  const [advancedBoxesPer100Xp, setAdvancedBoxesPer100Xp] = useState(
+    ADVANCED_BOXES_PER_TIER,
+  )
+  const [collectionBoxesPer100Xp, setCollectionBoxesPer100Xp] = useState(
+    COLLECTION_BOXES_PER_TIER,
+  )
   const [advancedBoxes, setAdvancedBoxes] = useState(0)
   const [collectionBoxes, setCollectionBoxes] = useState(0)
 
@@ -51,8 +57,19 @@ export function KafraCalculator() {
         collectionRewards,
         purchasedLevels,
         bpZenyReward,
+        advancedBoxesPer100Xp,
+        collectionBoxesPer100Xp,
       ),
-    [year, month, advancedRewards, collectionRewards, purchasedLevels, bpZenyReward],
+    [
+      year,
+      month,
+      advancedRewards,
+      collectionRewards,
+      purchasedLevels,
+      bpZenyReward,
+      advancedBoxesPer100Xp,
+      collectionBoxesPer100Xp,
+    ],
   )
 
   useEffect(() => {
@@ -69,6 +86,8 @@ export function KafraCalculator() {
         collectionRewards,
         purchasedLevels,
         bpZenyReward,
+        advancedBoxesPer100Xp,
+        collectionBoxesPer100Xp,
         advancedBoxes,
         collectionBoxes,
       ),
@@ -79,6 +98,8 @@ export function KafraCalculator() {
       collectionRewards,
       purchasedLevels,
       bpZenyReward,
+      advancedBoxesPer100Xp,
+      collectionBoxesPer100Xp,
       advancedBoxes,
       collectionBoxes,
     ],
@@ -189,8 +210,7 @@ export function KafraCalculator() {
         <p className="mt-4 text-sm leading-6 text-slate-400">
           {DAILY_XP} XP per day, +{MONDAY_BONUS_XP} XP on Mondays, {WEEKLY_XP_CAP} XP
           weekly cap (resets on Mondays and on the 1st of each month). Every {XP_PER_TIER}{' '}
-          XP above level {BP_MAX_LEVELS}: {ADVANCED_BOXES_PER_TIER} advanced and{' '}
-          {COLLECTION_BOXES_PER_TIER} collection boxes.
+          XP above level {BP_MAX_LEVELS} grants boxes per column settings below.
         </p>
       </section>
 
@@ -198,12 +218,16 @@ export function KafraCalculator() {
         <DropTableEditor
           title="Advanced Box"
           rewards={advancedRewards}
-          onChange={setAdvancedRewards}
+          boxesPer100Xp={advancedBoxesPer100Xp}
+          onRewardsChange={setAdvancedRewards}
+          onBoxesPer100XpChange={setAdvancedBoxesPer100Xp}
         />
         <DropTableEditor
           title="Collection Box"
           rewards={collectionRewards}
-          onChange={setCollectionRewards}
+          boxesPer100Xp={collectionBoxesPer100Xp}
+          onRewardsChange={setCollectionRewards}
+          onBoxesPer100XpChange={setCollectionBoxesPer100Xp}
         />
 
         <aside className="rounded-2xl border border-violet-500/30 bg-violet-500/10 p-5 xl:sticky xl:top-6 xl:self-start">

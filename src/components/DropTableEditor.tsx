@@ -1,10 +1,12 @@
 import type { BoxReward } from '../lib/kafra-calculator'
-import { expectedZenyPerBox, formatZeny } from '../lib/kafra-calculator'
+import { expectedZenyPerBox, formatZeny, XP_PER_TIER } from '../lib/kafra-calculator'
 
 type DropTableEditorProps = {
   title: string
   rewards: BoxReward[]
-  onChange: (rewards: BoxReward[]) => void
+  boxesPer100Xp: number
+  onRewardsChange: (rewards: BoxReward[]) => void
+  onBoxesPer100XpChange: (boxesPer100Xp: number) => void
 }
 
 function updateReward(
@@ -17,7 +19,13 @@ function updateReward(
   )
 }
 
-export function DropTableEditor({ title, rewards, onChange }: DropTableEditorProps) {
+export function DropTableEditor({
+  title,
+  rewards,
+  boxesPer100Xp,
+  onRewardsChange,
+  onBoxesPer100XpChange,
+}: DropTableEditorProps) {
   const zenyPerBox = expectedZenyPerBox(rewards)
   const totalChance = rewards.reduce((sum, reward) => sum + reward.chancePercent, 0)
 
@@ -34,7 +42,7 @@ export function DropTableEditor({ title, rewards, onChange }: DropTableEditorPro
         <button
           type="button"
           onClick={() =>
-            onChange([
+            onRewardsChange([
               ...rewards,
               { id: crypto.randomUUID(), chancePercent: 0, zeny: 0 },
             ])
@@ -44,6 +52,20 @@ export function DropTableEditor({ title, rewards, onChange }: DropTableEditorPro
           + row
         </button>
       </div>
+
+      <label className="mb-4 flex flex-col gap-1 text-xs text-slate-400">
+        Boxes per {XP_PER_TIER} XP
+        <input
+          type="number"
+          min={0}
+          step={1}
+          value={boxesPer100Xp}
+          onChange={(event) =>
+            onBoxesPer100XpChange(Math.max(0, Math.floor(Number(event.target.value) || 0)))
+          }
+          className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white outline-none focus:border-violet-500"
+        />
+      </label>
 
       <div className="space-y-2">
         <div className="grid grid-cols-[1fr_1fr_auto] gap-2 px-1 text-xs uppercase tracking-wide text-slate-500">
@@ -64,7 +86,7 @@ export function DropTableEditor({ title, rewards, onChange }: DropTableEditorPro
               step={0.1}
               value={reward.chancePercent}
               onChange={(event) =>
-                onChange(
+                onRewardsChange(
                   updateReward(rewards, reward.id, {
                     chancePercent: Number(event.target.value),
                   }),
@@ -78,7 +100,7 @@ export function DropTableEditor({ title, rewards, onChange }: DropTableEditorPro
               step={1000}
               value={reward.zeny}
               onChange={(event) =>
-                onChange(
+                onRewardsChange(
                   updateReward(rewards, reward.id, {
                     zeny: Number(event.target.value),
                   }),
@@ -90,7 +112,7 @@ export function DropTableEditor({ title, rewards, onChange }: DropTableEditorPro
               type="button"
               disabled={rewards.length <= 1}
               onClick={() =>
-                onChange(rewards.filter((item) => item.id !== reward.id))
+                onRewardsChange(rewards.filter((item) => item.id !== reward.id))
               }
               className="rounded-lg px-2 text-slate-500 transition hover:bg-slate-800 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-30"
               aria-label="Remove row"
