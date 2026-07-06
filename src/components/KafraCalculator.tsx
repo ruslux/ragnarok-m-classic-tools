@@ -64,23 +64,26 @@ export function KafraCalculator() {
           only to XP above a fully closed pass.
         </p>
 
-        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end">
-          <label className="flex flex-col gap-1 text-xs text-slate-400">
-            Purchased levels
+        <div className="mt-4 space-y-4">
+          <label className="block">
+            <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
+              <span>Purchased levels</span>
+              <span className="font-medium text-violet-200">
+                {purchasedLevels} / {BP_MAX_LEVELS}
+              </span>
+            </div>
             <input
-              type="number"
+              type="range"
               min={0}
               max={BP_MAX_LEVELS}
+              step={1}
               value={purchasedLevels}
-              onChange={(event) =>
-                setPurchasedLevels(
-                  Math.min(BP_MAX_LEVELS, Math.max(0, Number(event.target.value))),
-                )
-              }
-              className="w-32 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white outline-none focus:border-violet-500"
+              onChange={(event) => setPurchasedLevels(Number(event.target.value))}
+              className="h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-800 accent-violet-500"
             />
           </label>
 
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
           <label className="flex flex-col gap-1 text-xs text-slate-400">
             BP zeny rewards
             <input
@@ -105,6 +108,7 @@ export function KafraCalculator() {
             <p className="mt-1 text-xs text-slate-500">
               {formatZeny(ZENY_PER_BP_LEVEL)} per level
             </p>
+          </div>
           </div>
         </div>
       </section>
