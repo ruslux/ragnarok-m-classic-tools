@@ -1,11 +1,14 @@
 import { useMemo, useState } from 'react'
 import {
   ADVANCED_BOXES_PER_TIER,
+  BP_MAX_LEVELS,
   COLLECTION_BOXES_PER_TIER,
   DAILY_XP,
   MONDAY_BONUS_XP,
   WEEKLY_XP_CAP,
+  XP_PER_BP_LEVEL,
   XP_PER_TIER,
+  ZENY_PER_BP_LEVEL,
   calculateMonthlyRewards,
   cloneDefaultRewards,
   formatMonthLabel,
@@ -28,6 +31,7 @@ function StatRow({ label, value }: { label: string; value: string }) {
 export function KafraCalculator() {
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth())
+  const [purchasedLevels, setPurchasedLevels] = useState(0)
   const [advancedRewards, setAdvancedRewards] = useState<BoxReward[]>(() =>
     cloneDefaultRewards(),
   )
@@ -36,12 +40,59 @@ export function KafraCalculator() {
   )
 
   const result = useMemo(
-    () => calculateMonthlyRewards(year, month, advancedRewards, collectionRewards),
-    [year, month, advancedRewards, collectionRewards],
+    () =>
+      calculateMonthlyRewards(
+        year,
+        month,
+        advancedRewards,
+        collectionRewards,
+        purchasedLevels,
+      ),
+    [year, month, advancedRewards, collectionRewards, purchasedLevels],
   )
 
   return (
     <div className="space-y-6">
+      <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+        <p className="text-sm font-medium uppercase tracking-widest text-violet-400">
+          Battle Pass
+        </p>
+        <p className="mt-1 text-sm text-slate-400">
+          {XP_PER_BP_LEVEL} XP = 1 level, max {BP_MAX_LEVELS} levels. Box rewards apply
+          only to XP above a fully closed pass.
+        </p>
+
+        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end">
+          <label className="flex flex-col gap-1 text-xs text-slate-400">
+            Purchased levels
+            <input
+              type="number"
+              min={0}
+              max={BP_MAX_LEVELS}
+              value={purchasedLevels}
+              onChange={(event) =>
+                setPurchasedLevels(
+                  Math.min(BP_MAX_LEVELS, Math.max(0, Number(event.target.value))),
+                )
+              }
+              className="w-32 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white outline-none focus:border-violet-500"
+            />
+          </label>
+
+          <div className="rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3">
+            <p className="text-xs uppercase tracking-wide text-slate-500">
+              Purchase cost
+            </p>
+            <p className="mt-1 text-lg font-semibold text-white">
+              {formatZeny(result.purchaseCost)}
+            </p>
+            <p className="mt-1 text-xs text-slate-500">
+              {formatZeny(ZENY_PER_BP_LEVEL)} per level
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -87,8 +138,8 @@ export function KafraCalculator() {
         <p className="mt-4 text-sm leading-6 text-slate-400">
           {DAILY_XP} XP per day, +{MONDAY_BONUS_XP} XP on Mondays, {WEEKLY_XP_CAP} XP
           weekly cap (resets on Mondays and on the 1st of each month). Every {XP_PER_TIER}{' '}
-          XP: {ADVANCED_BOXES_PER_TIER} advanced and {COLLECTION_BOXES_PER_TIER}{' '}
-          collection boxes.
+          XP above level {BP_MAX_LEVELS}: {ADVANCED_BOXES_PER_TIER} advanced and{' '}
+          {COLLECTION_BOXES_PER_TIER} collection boxes.
         </p>
       </section>
 
@@ -106,10 +157,10 @@ export function KafraCalculator() {
 
         <aside className="rounded-2xl border border-violet-500/30 bg-violet-500/10 p-5 xl:sticky xl:top-6 xl:self-start">
           <h2 className="text-lg font-semibold text-white">Results</h2>
-          <p className="mt-1 text-sm text-violet-200/80">Expected earnings this month</p>
+          <p className="mt-1 text-sm text-violet-200/80">Expected box earnings this month</p>
 
           <div className="mt-5 rounded-xl bg-slate-950/60 p-4">
-            <p className="text-xs uppercase tracking-wide text-slate-500">Total zeny</p>
+            <p className="text-xs uppercase tracking-wide text-slate-500">Box zeny</p>
             <p className="mt-1 text-3xl font-semibold text-white">
               {formatZeny(result.totalExpectedZeny)}
             </p>
@@ -119,6 +170,14 @@ export function KafraCalculator() {
             <StatRow
               label="Monthly XP"
               value={`${result.totalXp.toLocaleString('en-US')} XP`}
+            />
+            <StatRow
+              label="XP for BP levels"
+              value={`${result.xpForBp.toLocaleString('en-US')} XP`}
+            />
+            <StatRow
+              label="Surplus XP (boxes)"
+              value={`${result.surplusXp.toLocaleString('en-US')} XP`}
             />
             <StatRow label="Tiers (×100 XP)" value={result.tiers.toLocaleString('en-US')} />
             <StatRow
@@ -140,6 +199,26 @@ export function KafraCalculator() {
           </div>
         </aside>
       </div>
+
+      <section className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-medium uppercase tracking-widest text-emerald-400">
+              Final result
+            </p>
+            <p className="mt-1 text-sm text-emerald-200/80">
+              Box zeny minus BP level purchase cost
+            </p>
+          </div>
+          <p
+            className={`text-3xl font-semibold ${
+              result.netZeny >= 0 ? 'text-emerald-100' : 'text-red-300'
+            }`}
+          >
+            {formatZeny(result.netZeny)}
+          </p>
+        </div>
+      </section>
     </div>
   )
 }
