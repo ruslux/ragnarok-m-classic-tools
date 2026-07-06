@@ -31,6 +31,8 @@ export type MonthlyCalculation = {
   xpForBp: number
   surplusXp: number
   tiers: number
+  calculatedAdvancedBoxes: number
+  calculatedCollectionBoxes: number
   advancedBoxes: number
   collectionBoxes: number
   advancedExpectedZeny: number
@@ -102,6 +104,11 @@ export function clampNonNegative(value: number): number {
   return Number.isFinite(value) && value > 0 ? value : 0
 }
 
+export function clampNonNegativeInt(value: number): number {
+  if (!Number.isFinite(value)) return 0
+  return Math.max(0, Math.floor(value))
+}
+
 export function splitXpForBpAndBoxes(
   totalXp: number,
   purchasedLevels: number,
@@ -121,6 +128,8 @@ export function calculateMonthlyRewards(
   collectionRewards: BoxReward[],
   purchasedLevels = 0,
   bpZenyReward = 0,
+  advancedBoxesOverride?: number,
+  collectionBoxesOverride?: number,
 ): MonthlyCalculation {
   const totalXp = calculateMonthlyXp(year, month)
   const clampedPurchasedLevels = Math.min(Math.max(0, purchasedLevels), BP_MAX_LEVELS)
@@ -128,8 +137,16 @@ export function calculateMonthlyRewards(
   const purchaseCost = calculatePurchaseCost(clampedPurchasedLevels)
   const { xpForBp, surplusXp } = splitXpForBpAndBoxes(totalXp, clampedPurchasedLevels)
   const tiers = Math.floor(surplusXp / XP_PER_TIER)
-  const advancedBoxes = tiers * ADVANCED_BOXES_PER_TIER
-  const collectionBoxes = tiers * COLLECTION_BOXES_PER_TIER
+  const calculatedAdvancedBoxes = tiers * ADVANCED_BOXES_PER_TIER
+  const calculatedCollectionBoxes = tiers * COLLECTION_BOXES_PER_TIER
+  const advancedBoxes =
+    advancedBoxesOverride !== undefined
+      ? clampNonNegativeInt(advancedBoxesOverride)
+      : calculatedAdvancedBoxes
+  const collectionBoxes =
+    collectionBoxesOverride !== undefined
+      ? clampNonNegativeInt(collectionBoxesOverride)
+      : calculatedCollectionBoxes
   const advancedZenyPerBox = expectedZenyPerBox(advancedRewards)
   const collectionZenyPerBox = expectedZenyPerBox(collectionRewards)
   const advancedExpectedZeny = advancedBoxes * advancedZenyPerBox
@@ -146,6 +163,8 @@ export function calculateMonthlyRewards(
     xpForBp,
     surplusXp,
     tiers,
+    calculatedAdvancedBoxes,
+    calculatedCollectionBoxes,
     advancedBoxes,
     collectionBoxes,
     advancedZenyPerBox,
