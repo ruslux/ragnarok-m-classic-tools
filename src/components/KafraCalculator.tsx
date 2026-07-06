@@ -4,6 +4,7 @@ import {
   BP_MAX_LEVELS,
   COLLECTION_BOXES_PER_TIER,
   DAILY_XP,
+  MAX_MIDDLE_SECTION_CYCLES_PER_MONTH,
   MONDAY_BONUS_XP,
   WEEKLY_XP_CAP,
   XP_PER_BP_LEVEL,
@@ -175,7 +176,8 @@ export function KafraCalculator() {
         <p className="mt-4 text-sm leading-6 text-slate-400">
           {DAILY_XP} XP per day, +{MONDAY_BONUS_XP} XP on Mondays, {WEEKLY_XP_CAP} XP
           weekly cap (resets on Mondays and on the 1st of each month). Every {XP_PER_TIER}{' '}
-          XP above level {BP_MAX_LEVELS} grants boxes per column settings below.
+          XP above level {BP_MAX_LEVELS} grants boxes per column settings below (max{' '}
+          {MAX_MIDDLE_SECTION_CYCLES_PER_MONTH} cycles per month).
         </p>
       </section>
 
@@ -219,7 +221,18 @@ export function KafraCalculator() {
               label="Surplus XP (boxes)"
               value={`${result.surplusXp.toLocaleString('en-US')} XP`}
             />
-            <StatRow label="Tiers (×100 XP)" value={result.tiers.toLocaleString('en-US')} />
+            <StatRow
+              label="Surplus tiers (×100 XP)"
+              value={result.surplusTiers.toLocaleString('en-US')}
+            />
+            <StatRow
+              label="Reward cycles"
+              value={
+                result.surplusTiers > result.rewardCycles
+                  ? `${result.rewardCycles.toLocaleString('en-US')} / ${result.surplusTiers.toLocaleString('en-US')}`
+                  : result.rewardCycles.toLocaleString('en-US')
+              }
+            />
             <StatRow
               label="Advanced boxes"
               value={result.advancedBoxes.toLocaleString('en-US')}

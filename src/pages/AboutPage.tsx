@@ -10,6 +10,7 @@ export function AboutPage() {
       <ul className="mt-6 space-y-2 text-sm text-slate-400">
         <li>Expected value is computed from drop chance tables (EV)</li>
         <li>100 XP = 1 BP level; box rewards apply only to XP above level 50</li>
+        <li>Middle section box cycles are capped at 20 per month</li>
         <li>Weekly XP cap resets on Mondays and on the 1st of each month</li>
         <li>Advanced and Collection drop tables are edited independently</li>
       </ul>

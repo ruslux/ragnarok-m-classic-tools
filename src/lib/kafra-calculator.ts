@@ -20,6 +20,7 @@ export const COLLECTION_BOXES_PER_TIER = 24
 export const DAILY_XP = 140
 export const MONDAY_BONUS_XP = 620
 export const WEEKLY_XP_CAP = 1950
+export const MAX_MIDDLE_SECTION_CYCLES_PER_MONTH = 20
 
 export type MonthlyCalculation = {
   year: number
@@ -30,7 +31,8 @@ export type MonthlyCalculation = {
   totalXp: number
   xpForBp: number
   surplusXp: number
-  tiers: number
+  surplusTiers: number
+  rewardCycles: number
   advancedBoxes: number
   collectionBoxes: number
   advancedExpectedZeny: number
@@ -136,9 +138,10 @@ export function calculateMonthlyRewards(
   const clampedCollectionBoxesPerTier = clampNonNegativeInt(collectionBoxesPerTier)
   const purchaseCost = calculatePurchaseCost(clampedPurchasedLevels)
   const { xpForBp, surplusXp } = splitXpForBpAndBoxes(totalXp, clampedPurchasedLevels)
-  const tiers = Math.floor(surplusXp / XP_PER_TIER)
-  const advancedBoxes = tiers * clampedAdvancedBoxesPerTier
-  const collectionBoxes = tiers * clampedCollectionBoxesPerTier
+  const surplusTiers = Math.floor(surplusXp / XP_PER_TIER)
+  const rewardCycles = Math.min(surplusTiers, MAX_MIDDLE_SECTION_CYCLES_PER_MONTH)
+  const advancedBoxes = rewardCycles * clampedAdvancedBoxesPerTier
+  const collectionBoxes = rewardCycles * clampedCollectionBoxesPerTier
   const advancedZenyPerBox = expectedZenyPerBox(advancedRewards)
   const collectionZenyPerBox = expectedZenyPerBox(collectionRewards)
   const advancedExpectedZeny = advancedBoxes * advancedZenyPerBox
@@ -154,7 +157,8 @@ export function calculateMonthlyRewards(
     totalXp,
     xpForBp,
     surplusXp,
-    tiers,
+    surplusTiers,
+    rewardCycles,
     advancedBoxes,
     collectionBoxes,
     advancedZenyPerBox,
