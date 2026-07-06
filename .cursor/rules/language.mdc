@@ -1,0 +1,18 @@
+---
+description: English for project artifacts; Russian only in chat with the user
+alwaysApply: true
+---
+
+# Language
+
+- **User chat**: respond to the user in Russian.
+- **Everything in the repo**: English only — UI copy, README, comments, commit messages, variable names, docs, error messages, aria-labels.
+- **Formatting**: use `en-US` locale for numbers and dates in the app unless the user explicitly asks for another locale.
+
+```tsx
+// ✅ GOOD — UI in English
+<StatRow label="Monthly XP" value={`${xp.toLocaleString('en-US')} XP`} />
+
+// ❌ BAD — Russian in source/UI
+<StatRow label="Опыт за месяц" value={`${xp.toLocaleString('ru-RU')} XP`} />
+```

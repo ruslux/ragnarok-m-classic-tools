@@ -10,15 +10,13 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
 
 export function Layout() {
   return (
-    <div className="mx-auto flex min-h-svh max-w-3xl flex-col px-4 py-8">
+    <div className="mx-auto flex min-h-svh max-w-6xl flex-col px-4 py-8">
       <header className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm font-medium uppercase tracking-widest text-violet-400">
-            Ragnarok Tools
+            Ragnarok M Classic
           </p>
-          <h1 className="mt-1 text-2xl font-semibold text-white">
-            Static SPA on GitHub Pages
-          </h1>
+          <h1 className="mt-1 text-2xl font-semibold text-white">Tools</h1>
         </div>
 
         <nav className="flex gap-2">
