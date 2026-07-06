@@ -1,0 +1,37 @@
+# Dependencies (largest token sink)
+node_modules/
+
+# Build artifacts
+dist/
+dist-ssr/
+coverage/
+
+# Lock files (large, rarely needed in context)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Source maps
+**/*.map
+
+# Binary / media assets
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.gif
+**/*.webp
+**/*.ico
+**/*.svg
+**/*.woff
+**/*.woff2
+**/*.ttf
+**/*.eot
+
+# Logs and caches
+*.log
+.cache/
+.parcel-cache/
+.turbo/
+
+# OS junk
+.DS_Store
