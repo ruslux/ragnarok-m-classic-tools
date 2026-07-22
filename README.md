@@ -13,7 +13,13 @@ npm install
 npm run dev
 ```
 
-Local preview with GitHub Pages base path:
+Production build preview (root base path):
+
+```bash
+npm run preview:local
+```
+
+Same with the GitHub Pages base path:
 
 ```bash
 npm run preview:pages

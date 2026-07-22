@@ -19,9 +19,15 @@ export function Layout() {
           <h1 className="mt-1 text-2xl font-semibold text-white">Tools</h1>
         </div>
 
-        <nav className="flex gap-2">
+        <nav className="flex flex-wrap gap-2">
           <NavLink to="/" end className={linkClass}>
             Home
+          </NavLink>
+          <NavLink to="/calculators/kafra" className={linkClass}>
+            Kafra
+          </NavLink>
+          <NavLink to="/calculators/ms" className={linkClass}>
+            MS Calc
           </NavLink>
           <NavLink to="/about" className={linkClass}>
             About
